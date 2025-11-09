@@ -89,133 +89,132 @@ export default function CatalystApp() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="mb-8 text-center">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <Sparkles className="w-8 h-8 text-green-600" />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            Catalyst
-          </h1>
+    <div className="min-h-screen bg-background p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Voice Assistant</h1>
+          <p className="text-muted-foreground">
+            Transform meeting notes into structured deliverables with AI
+          </p>
         </div>
-        <p className="text-lg text-zinc-600 dark:text-zinc-400">
-          AI-powered PM productivity agent by NVIDIA Nemotron
-        </p>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle>Meeting Notes</CardTitle>
-            <CardDescription>
-              Paste your raw meeting notes below
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder="Enter your meeting notes here..."
-              className="min-h-[300px] font-mono text-sm"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Input Card */}
+          <Card className="border border-border">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold">Meeting Notes</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Paste your raw meeting notes below
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <Textarea
+                placeholder="Enter your meeting notes here..."
+                className="min-h-[320px] font-mono text-sm border-border resize-none"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
 
-            <div className="space-y-3">
-              <label className="text-sm font-medium">Select Output Type</label>
-              <div className="grid grid-cols-2 gap-2">
-                {outputTypes.map((type) => {
-                  const Icon = type.icon;
-                  return (
-                    <Button
-                      key={type.value}
-                      variant={selectedType === type.value ? "default" : "outline"}
-                      onClick={() => setSelectedType(type.value as OutputType)}
-                      className="justify-start"
-                    >
-                      <Icon className="w-4 h-4 mr-2" />
-                      {type.label}
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <Button
-              onClick={handleProcess}
-              disabled={isProcessing || !notes.trim()}
-              className="w-full"
-              size="lg"
-            >
-              {isProcessing ? (
-                <>Processing with NVIDIA Nemotron...</>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Generate {outputTypes.find(t => t.value === selectedType)?.label}
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-lg">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Processed Output</CardTitle>
-                <CardDescription>
-                  AI-generated structured deliverable
-                </CardDescription>
-              </div>
-              {processedOutput && (
-                <Badge variant="secondary">
-                  {outputTypes.find(t => t.value === selectedType)?.label}
-                </Badge>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="min-h-[300px] p-4 bg-zinc-50 dark:bg-zinc-900 rounded-lg border">
-              {processedOutput ? (
-                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                  {processedOutput}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">Select Output Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {outputTypes.map((type) => {
+                    const Icon = type.icon;
+                    return (
+                      <Button
+                        key={type.value}
+                        variant={selectedType === type.value ? "default" : "outline"}
+                        onClick={() => setSelectedType(type.value as OutputType)}
+                        className="justify-start h-10"
+                      >
+                        <Icon className="w-4 h-4 mr-2" />
+                        {type.label}
+                      </Button>
+                    );
+                  })}
                 </div>
-              ) : (
-                <p className="text-zinc-500 dark:text-zinc-400 text-center py-20">
-                  Your processed output will appear here...
-                </p>
-              )}
-            </div>
-
-            {processedOutput && (
-              <div className="space-y-3 pt-4 border-t">
-                <label className="text-sm font-medium">Export to Notion</label>
-                <Input
-                  placeholder="Enter page title..."
-                  value={notionTitle}
-                  onChange={(e) => setNotionTitle(e.target.value)}
-                />
-                <Button
-                  onClick={handleExportToNotion}
-                  disabled={isExporting || !notionTitle.trim()}
-                  className="w-full"
-                  variant="secondary"
-                >
-                  {isExporting ? (
-                    <>Exporting to Notion...</>
-                  ) : (
-                    <>
-                      <Download className="w-4 h-4 mr-2" />
-                      Export to Notion
-                    </>
-                  )}
-                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
 
-      <div className="mt-8 text-center text-sm text-zinc-500">
-        <p>Powered by NVIDIA Nemotron LLM | Built for HackUTD 2025</p>
+              <Button
+                onClick={handleProcess}
+                disabled={isProcessing || !notes.trim()}
+                className="w-full h-10 font-medium"
+                size="lg"
+              >
+                {isProcessing ? (
+                  <>Processing with NVIDIA Nemotron...</>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate {outputTypes.find(t => t.value === selectedType)?.label}
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Output Card */}
+          <Card className="border border-border">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold">Processed Output</CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">
+                    AI-generated structured deliverable
+                  </CardDescription>
+                </div>
+                {processedOutput && (
+                  <Badge variant="secondary" className="font-normal">
+                    {outputTypes.find(t => t.value === selectedType)?.label}
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="min-h-[320px] p-4 bg-muted/30 rounded-md border border-border">
+                {processedOutput ? (
+                  <div className="prose prose-sm max-w-none whitespace-pre-wrap text-foreground">
+                    {processedOutput}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-20 text-sm">
+                    Your processed output will appear here...
+                  </p>
+                )}
+              </div>
+
+              {processedOutput && (
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <label className="text-sm font-medium text-foreground">Export to Notion</label>
+                  <Input
+                    placeholder="Enter page title..."
+                    value={notionTitle}
+                    onChange={(e) => setNotionTitle(e.target.value)}
+                    className="border-border"
+                  />
+                  <Button
+                    onClick={handleExportToNotion}
+                    disabled={isExporting || !notionTitle.trim()}
+                    className="w-full h-10 font-medium"
+                    variant="secondary"
+                  >
+                    {isExporting ? (
+                      <>Exporting to Notion...</>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Export to Notion
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
       </div>
     </div>
   );
