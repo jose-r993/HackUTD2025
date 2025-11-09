@@ -300,3 +300,15 @@ class UserOut(UserBase):
 class UserListOut(BaseModel):
     users: List[UserOut]
     total: int
+
+
+# ============================================================================
+# MERMAID GENERATION SCHEMAS
+# ============================================================================
+
+class MermaidGenerateRequest(BaseModel):
+    prompt: str = Field(..., description="Text description to convert to Mermaid diagram")
+
+
+class MermaidGenerateResponse(BaseModel):
+    mermaid: str = Field(..., description="Generated Mermaid diagram syntax")

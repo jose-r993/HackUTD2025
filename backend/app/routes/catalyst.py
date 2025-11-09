@@ -15,6 +15,8 @@ from app.models.schemas import (
     TicketCreate, TicketUpdate, TicketOut, TicketListOut,
     # User schemas
     UserCreate, UserUpdate, UserOut, UserListOut,
+    # Mermaid schemas
+    MermaidGenerateRequest, MermaidGenerateResponse,
 )
 from app.services.firestore_client import get_db
 from app.services.project_service import project_service
@@ -23,6 +25,7 @@ from app.services.cycle_service import cycle_service
 from app.services.module_service import module_service
 from app.services.ticket_service import ticket_service
 from app.services.user_service import user_service
+from app.services.nemotron_service import generate_mermaid_from_prompt
 
 
 # Main router that will be included in the app
@@ -443,6 +446,23 @@ def delete_user(user_id: str, db: firestore.Client = Depends(get_db)):
 
 
 # ============================================================================
+# MERMAID GENERATION ROUTES
+# ============================================================================
+
+mermaid_router = APIRouter(prefix="/mermaid", tags=["Mermaid"])
+
+
+@mermaid_router.post("/generate", response_model=MermaidGenerateResponse)
+def generate_mermaid(request: MermaidGenerateRequest):
+    """Generate Mermaid diagram syntax from a text prompt using NVIDIA Nemotron"""
+    try:
+        mermaid_code = generate_mermaid_from_prompt(request.prompt)
+        return MermaidGenerateResponse(mermaid=mermaid_code)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate Mermaid diagram: {str(e)}")
+
+
+# ============================================================================
 # Include all sub-routers in the main router
 # ============================================================================
 
@@ -452,3 +472,4 @@ router.include_router(cycle_router)
 router.include_router(module_router)
 router.include_router(ticket_router)
 router.include_router(user_router)
+router.include_router(mermaid_router)

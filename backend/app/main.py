@@ -1,8 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+import os
 from app.routes import catalyst
 from app.services.firebase_service import initialize_firebase, cleanup_firebase
+
+# Load environment variables from .env file
+# This looks for .env in the backend directory
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(backend_dir, ".env")
+load_dotenv(env_path)
 
 
 @asynccontextmanager
