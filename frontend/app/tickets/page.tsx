@@ -340,11 +340,16 @@ export default function TicketsPage() {
       if (formData.summary && formData.summary.trim()) {
         payload.summary = formData.summary.trim();
       }
+      // Always include assignee_id to allow clearing it (send null if not set)
       if (formData.assignee_id) {
         payload.assignee_id = formData.assignee_id;
       } else if (formData.assignee && formData.assignee.trim()) {
         // Fallback for backward compatibility
         payload.assignee = formData.assignee.trim();
+      } else {
+        // Explicitly clear assignee if not set
+        payload.assignee_id = null;
+        payload.assignee = null;
       }
       if (formData.start_date) {
         payload.start_date = formData.start_date;
@@ -453,8 +458,8 @@ export default function TicketsPage() {
     // Map backend status to display status
     const statusToDisplay: Record<TicketStatus, string> = {
       open: "backlog",
-      in_progress: "in_progress",
-      resolved: "done",
+      in_progress: "todo",
+      resolved: "in_progress",
       closed: "done",
     };
     setDisplayStatus(statusToDisplay[ticket.status] || "backlog");
@@ -487,13 +492,19 @@ export default function TicketsPage() {
   });
 
   // Map backend status to display column
-  const getDisplayColumn = (status: TicketStatus): string => {
-    switch (status) {
+  // We map each backend status to a unique display column:
+  // - "open" -> "backlog"
+  // - "in_progress" -> "todo" (tickets ready to work on)
+  // - "resolved" -> "in_progress" (tickets being worked on)
+  // - "closed" -> "done" (completed tickets)
+  const getDisplayColumn = (ticket: Ticket): string => {
+    switch (ticket.status) {
       case "open":
         return "backlog";
       case "in_progress":
-        return "in_progress";
+        return "todo";
       case "resolved":
+        return "in_progress";
       case "closed":
         return "done";
       default:
@@ -503,10 +514,10 @@ export default function TicketsPage() {
 
   // Group tickets by display column
   const ticketsByColumn = {
-    backlog: filteredTickets.filter((t) => getDisplayColumn(t.status) === "backlog"),
-    todo: filteredTickets.filter((t) => getDisplayColumn(t.status) === "todo"),
-    in_progress: filteredTickets.filter((t) => getDisplayColumn(t.status) === "in_progress"),
-    done: filteredTickets.filter((t) => getDisplayColumn(t.status) === "done"),
+    backlog: filteredTickets.filter((t) => getDisplayColumn(t) === "backlog"),
+    todo: filteredTickets.filter((t) => getDisplayColumn(t) === "todo"),
+    in_progress: filteredTickets.filter((t) => getDisplayColumn(t) === "in_progress"),
+    done: filteredTickets.filter((t) => getDisplayColumn(t) === "done"),
   };
 
   // Get ticket icon and color based on priority/type
@@ -761,9 +772,21 @@ export default function TicketsPage() {
                       return (
                         <div
                           key={ticket.id}
-                          className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                          className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow relative group"
                           onClick={() => openEditModal(ticket)}
                         >
+                          {/* Delete Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteTicket(ticket.id);
+                            }}
+                            className="absolute top-2 right-2 p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Delete ticket"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+
                           {/* Ticket Header */}
                           <div className="flex items-start mb-2">
                             <div className={`w-5 h-5 rounded-sm ${ticketIcon.bgColor} flex items-center justify-center mr-2`}>
@@ -828,9 +851,9 @@ export default function TicketsPage() {
                     onClick={() => {
                       const statusMap: Record<string, TicketStatus> = {
                         backlog: "open",
-                        todo: "open",
-                        in_progress: "in_progress",
-                        done: "resolved",
+                        todo: "in_progress",
+                        in_progress: "resolved",
+                        done: "closed",
                       };
                       setDisplayStatus(column.key);
                       setFormData((prev) => ({
@@ -942,9 +965,9 @@ export default function TicketsPage() {
                     onSelect={(value) => {
                       const statusMap: Record<string, TicketStatus> = {
                         backlog: "open",
-                        todo: "open",
-                        in_progress: "in_progress",
-                        done: "resolved",
+                        todo: "in_progress",
+                        in_progress: "resolved",
+                        done: "closed",
                       };
                       setDisplayStatus(value);
                       setFormData({
@@ -1182,9 +1205,9 @@ export default function TicketsPage() {
                     onSelect={(value) => {
                       const statusMap: Record<string, TicketStatus> = {
                         backlog: "open",
-                        todo: "open",
-                        in_progress: "in_progress",
-                        done: "resolved",
+                        todo: "in_progress",
+                        in_progress: "resolved",
+                        done: "closed",
                       };
                       setDisplayStatus(value);
                       setFormData({
