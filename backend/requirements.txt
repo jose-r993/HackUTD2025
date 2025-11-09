@@ -4,3 +4,9 @@ firebase-admin==6.5.0
 pydantic==2.8.2
 python-dotenv==1.0.1
 openai>=1.55.3
+google-generativeai==0.3.2
+pypdf==4.0.1
+python-multipart==0.0.9
+matplotlib>=3.9.0
+pandas>=2.2.0
+numpy>=2.0.0

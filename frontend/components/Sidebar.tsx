@@ -8,7 +8,8 @@ import {
   Ticket,
   PenTool,
   BarChart3,
-  Calendar
+  Calendar,
+  Brain
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ const navigation = [
   { name: "Drawing Board", href: "/board", icon: PenTool },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Calendar", href: "/calendar", icon: Calendar },
+  { name: "Data Analysis", href: "/data-analysis", icon: Brain },
 ];
 
 export default function Sidebar() {

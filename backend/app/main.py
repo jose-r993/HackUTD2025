@@ -15,7 +15,7 @@ print(f"[ENV] DEEPGRAM_API_KEY present: {bool(os.getenv('DEEPGRAM_API_KEY'))}")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.routes import catalyst, voice
+from app.routes import catalyst, voice, rag
 from app.services.firebase_service import initialize_firebase, cleanup_firebase
 
 
@@ -59,3 +59,4 @@ app.add_middleware(
 
 app.include_router(catalyst.router)
 app.include_router(voice.router)
+app.include_router(rag.router)
